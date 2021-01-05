@@ -13,9 +13,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.monschein.movie.R
+import com.monschein.movie.presentation.MainActivity
 
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), SearchAdapter.OnSearchItemClickListener {
 
     private lateinit var Button: Button
     private lateinit var EditText: EditText
@@ -42,7 +43,7 @@ class SearchFragment : Fragment() {
         ProgressBar = view.findViewById(R.id.fragment_movie_search_ProgressBar)
         RecyclerView = view.findViewById(R.id.fragment_movie_search_RecyclerView)
 
-        adapter = SearchAdapter((requireContext()))
+        adapter = SearchAdapter(requireContext(), this)
         RecyclerView.adapter = adapter
 
         Button.setOnClickListener {
@@ -70,5 +71,11 @@ class SearchFragment : Fragment() {
 
             }
         }
+    }
+
+    override fun onSearchItemClick(id: String) {
+        val activity: MainActivity? = activity as? MainActivity
+
+        activity?.displayMovieDetail(id)
     }
 }

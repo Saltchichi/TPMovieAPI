@@ -1,11 +1,11 @@
 package com.monschein.movie.data.mock
 
 import com.monschein.movie.domain.model.MovieShort
-import com.monschein.movie.domain.repository.SearchRepository
+import com.monschein.movie.domain.repository.MovieRepository
 
-class MockSearchRepository : SearchRepository {
+class MockMovieRepository {
 
-    override suspend fun searchMovie(search: String): List<MovieShort> {
+    suspend fun searchMovie(search: String): List<MovieShort> {
         return listOf(
             MovieShort(
                 "1",

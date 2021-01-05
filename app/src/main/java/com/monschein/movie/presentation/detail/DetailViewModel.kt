@@ -1,4 +1,4 @@
-package com.monschein.movie.presentation.search
+package com.monschein.movie.presentation.detail
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,22 +7,21 @@ import androidx.lifecycle.viewModelScope
 import com.monschein.movie.data.repository.OmdbRepository
 import com.monschein.movie.domain.repository.MovieRepository
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
-class SearchViewModel : ViewModel() {
+class DetailViewModel : ViewModel() {
     private val repository: MovieRepository = OmdbRepository()
 
-    private val _state = MutableLiveData<SearchState>()
-    val state: LiveData<SearchState> get() = _state
+    private val _state = MutableLiveData<DetailState>()
+    val state : LiveData<DetailState> get() = _state
 
-    fun searchMovie(text: String) {
-        _state.value = SearchState.LoadingState
+    fun getMovieDetail(id: String) {
+        _state.value = DetailState.LoadingState
 
         viewModelScope.launch {
-            try {
-                _state.value = SearchState.SuccessState(repository.searchMovie(text))
+            try{
+                _state.value = DetailState.SuccessState(repository.getMovieDetail(id))
             } catch (e: Exception) {
-                _state.value = SearchState.ErrorState
+                _state.value = DetailState.ErrorState
             }
         }
     }
