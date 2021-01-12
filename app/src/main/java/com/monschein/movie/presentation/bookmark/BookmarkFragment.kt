@@ -1,4 +1,4 @@
-package com.monschein.movie.presentation.search
+package com.monschein.movie.presentation.bookmark
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,58 +14,56 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.monschein.movie.R
 import com.monschein.movie.presentation.MainActivity
+import com.monschein.movie.presentation.search.SearchAdapter
 
+class BookmarkFragment : Fragment(), SearchAdapter.OnSearchItemClickListener {
 
-class SearchFragment : Fragment(), SearchAdapter.OnSearchItemClickListener {
+    companion object {
+        fun newInstance() = BookmarkFragment()
+    }
 
-    private lateinit var Button: Button
-    private lateinit var EditText: EditText
     private lateinit var ProgressBar: ProgressBar
     private lateinit var RecyclerView: RecyclerView
 
-    private val viewModel: SearchViewModel by viewModels()
-
     private lateinit var adapter: SearchAdapter
+
+    private val viewModel: BookmarkViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_movie_search, container, false)
+        return inflater.inflate(R.layout.fragment_movie_bookmark, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Button = view.findViewById(R.id.fragment_movie_search_Button)
-        EditText = view.findViewById(R.id.fragment_movie_search_EditText)
         ProgressBar = view.findViewById(R.id.fragment_movie_search_ProgressBar)
         RecyclerView = view.findViewById(R.id.fragment_movie_search_RecyclerView)
 
         adapter = SearchAdapter(requireContext(), this)
         RecyclerView.adapter = adapter
 
-        Button.setOnClickListener {
-            viewModel.searchMovie(EditText.text.toString())
-        }
-
         viewModel.state.observe(viewLifecycleOwner, ::updateState)
+
+        viewModel.getBookmark()
     }
 
-    private fun updateState(state: SearchState) {
+    private fun updateState(state: BookmarkState) {
         when (state) {
-            is SearchState.ErrorState -> {
+            is BookmarkState.ErrorState -> {
                 ProgressBar.isVisible = false
                 adapter.setData(null)
 
                 Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG)
             }
-            is SearchState.LoadingState -> {
+            is BookmarkState.LoadingState -> {
                 ProgressBar.isVisible = true
                 adapter.setData(null)
             }
-            is SearchState.SuccessState -> {
+            is BookmarkState.SuccessState -> {
                 ProgressBar.isVisible = false
                 adapter.setData(state.movies)
             }

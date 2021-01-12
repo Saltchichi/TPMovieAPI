@@ -5,10 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -24,6 +21,7 @@ class DetailFragment : Fragment() {
     private lateinit var metascoreDetail: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var image: ImageView
+    private lateinit var bookmark: Button
 
     private val viewModel: DetailViewModel by viewModels()
 
@@ -59,6 +57,7 @@ class DetailFragment : Fragment() {
         metascoreDetail = view.findViewById(R.id.metascore_detail)
         progressBar = view.findViewById(R.id.progress_bar)
         image = view.findViewById(R.id.poster_detail)
+        bookmark = view.findViewById(R.id.fragment_movie_detail_bookmark_Button)
 
         viewModel.state.observe(viewLifecycleOwner, ::updateState)
 
@@ -70,10 +69,15 @@ class DetailFragment : Fragment() {
     private fun updateState(state: DetailState) {
         when (state) {
             is DetailState.ErrorState -> {
+                progressBar.isVisible = false
                 Toast.makeText(requireContext(), "Error", Toast.LENGTH_LONG).show()
+
+                bookmark.setOnClickListener(null)
             }
             is DetailState.LoadingState -> {
                 progressBar.isVisible = true
+
+                bookmark.setOnClickListener(null)
             }
             is DetailState.SuccessState -> {
                 progressBar.isVisible = false
@@ -83,6 +87,12 @@ class DetailFragment : Fragment() {
                 actorsDetail.text = state.movie.actors
                 if (state.movie.poster.isNotEmpty() && state.movie.poster.isNotBlank()) {
                     Picasso.get().load(state.movie.poster).into(image)
+
+                    bookmark.setOnClickListener {
+                        arguments?.getString(KEY_ID)?.let {
+                            viewModel.addBookmark(state.movie)
+                        }
+                    }
                 }
             }
         }
